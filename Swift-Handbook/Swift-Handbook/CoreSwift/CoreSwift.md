@@ -279,6 +279,8 @@ deinit {
 
 Nếu bạn tắt màn hình/xóa đối tượng mà **không thấy dòng này in ra**, chắc chắn đã bị Retain Cycle.
 
+
+
 ---
 
 ## 📌 Tổng kết
