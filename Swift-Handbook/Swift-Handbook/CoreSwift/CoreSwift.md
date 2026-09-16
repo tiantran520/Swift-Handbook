@@ -279,7 +279,27 @@ deinit {
 
 Nếu bạn tắt màn hình/xóa đối tượng mà **không thấy dòng này in ra**, chắc chắn đã bị Retain Cycle.
 
+## 9. Life Cycle
+Life Cycle (vòng đời) là một trong những chủ đề quan trọng nhất khi phỏng vấn iOS. Có 3 cấp độ Life Cycle bạn cần nắm:
 
+- **`App Life Cycle`** — vòng đời của toàn bộ ứng dụng
+
+- **`View Controller Life Cycle`**: — vòng đời của một màn hình
+
+- **`View Life Cycle`**  — vòng đời của UIView
+
+
+### A. App Life Cycle (Vòng đời ứng dụng)?
+
+### App Life Cycle quản lý trạng thái của toàn bộ ứng dụng từ khi khởi động đến khi bị tắt.
+
+## a Các trạng thái (App States)
+| Trạng Thái  | Mô tả |
+|----------------------|--------------|
+| ** Not Running ** | App chưa được khởi động hoặc đã bị hệ thống tắt |
+| ** Inactive ** | App đang chạy foreground nhưng không nhận event (ví dụ: đang có cuộc gọi đến, đang vuốt Control Center)|
+| ** Active ** |  App đang chạy foreground và nhận event — trạng thái bình thường |
+| **
 
 ---
 
