@@ -279,28 +279,382 @@ deinit {
 
 Nếu bạn tắt màn hình/xóa đối tượng mà **không thấy dòng này in ra**, chắc chắn đã bị Retain Cycle.
 
-## 9. Life Cycle
-Life Cycle (vòng đời) là một trong những chủ đề quan trọng nhất khi phỏng vấn iOS. Có 3 cấp độ Life Cycle bạn cần nắm:
+## 9. App Life Cycle trong iOS
 
-- **`App Life Cycle`** — vòng đời của toàn bộ ứng dụng
+> Vòng đời của ứng dụng iOS từ khi khởi động đến khi bị tắt.
+> Bao gồm: App States, AppDelegate, SceneDelegate, và các sự kiện quan trọng.
 
-- **`View Controller Life Cycle`**: — vòng đời của một màn hình
+## A. Tổng quan
 
-- **`View Life Cycle`**  — vòng đời của UIView
+**App Life Cycle** là vòng đời của toàn bộ ứng dụng iOS, quản lý trạng thái từ khi app được khởi động đến khi bị hệ thống tắt hoàn toàn.
 
+Có **2 cách** để quản lý App Life Cycle:
 
-### A. App Life Cycle (Vòng đời ứng dụng)?
+| Cách | Áp dụng | Đặc điểm |
+|------|---------|----------|
+| **AppDelegate** | Trước iOS 13 | Quản lý tất cả sự kiện app |
+| **AppDelegate + SceneDelegate** | Từ iOS 13+ | Tách UI Life Cycle ra khỏi App Life Cycle, hỗ trợ multi-window |
 
-### App Life Cycle quản lý trạng thái của toàn bộ ứng dụng từ khi khởi động đến khi bị tắt.
+---
 
-## a Các trạng thái (App States)
-| Trạng Thái  | Mô tả |
-|----------------------|--------------|
-| ** Not Running ** | App chưa được khởi động hoặc đã bị hệ thống tắt |
-| ** Inactive ** | App đang chạy foreground nhưng không nhận event (ví dụ: đang có cuộc gọi đến, đang vuốt Control Center)|
-| ** Active ** |  App đang chạy foreground và nhận event — trạng thái bình thường |
-| **
+## B. Các trạng thái của App
 
+Ứng dụng iOS có **5 trạng thái** chính:
+
+| Trạng thái | Mô tả |
+|------------|-------|
+| **Not Running** | App chưa được khởi động hoặc đã bị hệ thống tắt |
+| **Inactive** | App đang chạy foreground nhưng **không nhận event** (ví dụ: có cuộc gọi đến, mở Control Center) |
+| **Active** | App đang chạy foreground và **nhận event** — trạng thái bình thường |
+| **Background** | App chạy nền, vẫn có thể thực thi code nhưng **giới hạn thời gian** (~30 giây) |
+| **Suspended** | App bị đóng băng trong RAM, không thực thi code. Hệ thống có thể xóa bất cứ lúc nào nếu thiếu RAM |
+
+### Chi tiết từng trạng thái
+
+#### 🔴 Not Running
+- App chưa được khởi động, hoặc đã bị hệ thống terminate.
+- Không có code nào đang chạy.
+
+#### 🟡 Inactive
+- App đang ở foreground nhưng **tạm thời không nhận event**.
+- Ví dụ: có cuộc gọi đến, mở Control Center, mở Notification Center, chuyển sang app khác.
+
+#### 🟢 Active
+- App đang ở foreground và **nhận đầy đủ event** (touch, gesture...).
+- Đây là trạng thái bình thường khi user đang tương tác với app.
+
+#### 🔵 Background
+- App đã bị đẩy xuống nền (user nhấn Home hoặc chuyển app khác).
+- Vẫn có thể chạy code trong **~30 giây** trước khi bị suspend.
+- Có thể request thêm thời gian bằng `beginBackgroundTask(withName:expirationHandler:)`.
+
+#### ⚫ Suspended
+- App bị đóng băng trong RAM, không chạy code.
+- Hệ thống **có thể xóa app bất cứ lúc nào** nếu thiếu RAM.
+- Khi user mở lại, app sẽ khôi phục từ trạng thái đã lưu (nếu chưa bị xóa).
+
+---
+
+## C. Sơ đồ chuyển trạng thái
+
+```
+                    ┌──────────────┐
+                    │ Not Running  │
+                    └──────┬───────┘
+                           │
+                           │ (khởi động)
+                           ▼
+                    ┌──────────────┐
+              ┌────►│   Inactive   │◄────┐
+              │     └──────┬───────┘     │
+              │            │             │
+              │            │ (active)    │ (background)
+              │            ▼             │
+              │     ┌──────────────┐     │
+              └─────│    Active    │     │
+                    └──────┬───────┘     │
+                           │             │
+                           │ (background)│
+                           ▼             │
+                    ┌──────────────┐     │
+                    │  Background  │─────┘
+                    └──────┬───────┘
+                           │
+                           │ (hết thời gian)
+                           ▼
+                    ┌──────────────┐
+                    │  Suspended   │
+                    └──────┬───────┘
+                           │
+                           │ (bị hệ thống xóa)
+                           ▼
+                    ┌──────────────┐
+                    │ Not Running  │
+                    └──────────────┘
+```
+
+---
+
+## D. AppDelegate — Cách truyền thống
+
+`AppDelegate` là nơi nhận các sự kiện vòng đời của app (trước iOS 13).
+
+### d.1. Code mẫu
+
+```swift
+import UIKit
+
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    
+    var window: UIWindow?
+    
+    // ✅ App khởi động — gọi 1 lần duy nhất
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        print("🚀 App did finish launching")
+        // Khởi tạo SDK, setup window, cấu hình ban đầu
+        return true
+    }
+    
+    // ✅ App chuẩn bị vào foreground (chưa active)
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        print("📱 App will enter foreground")
+    }
+    
+    // ✅ App đã active — nhận event
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        print("✅ App did become active")
+    }
+    
+    // ✅ App chuẩn bị inactive (có cuộc gọi, mở control center)
+    func applicationWillResignActive(_ application: UIApplication) {
+        print("⚠️ App will resign active")
+    }
+    
+    // ✅ App vào background
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        print("🌙 App did enter background")
+        // Lưu dữ liệu, hủy timer không cần thiết
+    }
+    
+    // ✅ App chuẩn bị bị tắt
+    func applicationWillTerminate(_ application: UIApplication) {
+        print("💀 App will terminate")
+    }
+}
+```
+
+### d.2. Các sự kiện chính
+
+| Sự kiện | Gọi khi nào |
+|---------|-------------|
+| `didFinishLaunchingWithOptions` | App khởi động lần đầu |
+| `applicationWillEnterForeground` | App chuẩn bị vào foreground (từ background) |
+| `applicationDidBecomeActive` | App đã active, nhận event |
+| `applicationWillResignActive` | App chuẩn bị inactive |
+| `applicationDidEnterBackground` | App đã vào background |
+| `applicationWillTerminate` | App chuẩn bị bị tắt |
+
+---
+
+## E. SceneDelegate — Từ iOS 13+
+
+Từ iOS 13, Apple tách **UI Life Cycle** ra khỏi `AppDelegate` và đưa vào `SceneDelegate`. Điều này cho phép **multi-window** trên iPad.
+
+### e.1. Code mẫu
+
+```swift
+import UIKit
+
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    
+    var window: UIWindow?
+    
+    // ✅ Scene được tạo — tương đương didFinishLaunching của AppDelegate
+    func scene(
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
+        options connectionOptions: UIScene.ConnectionOptions
+    ) {
+        print("🪟 Scene will connect")
+        
+        guard let windowScene = scene as? UIWindowScene else { return }
+        window = UIWindow(windowScene: windowScene)
+        window?.rootViewController = ViewController()
+        window?.makeKeyAndVisible()
+    }
+    
+    // ✅ Scene chuẩn bị vào foreground
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        print("📱 Scene will enter foreground")
+    }
+    
+    // ✅ Scene đã active
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        print("✅ Scene did become active")
+    }
+    
+    // ✅ Scene chuẩn bị inactive
+    func sceneWillResignActive(_ scene: UIScene) {
+        print("⚠️ Scene will resign active")
+    }
+    
+    // ✅ Scene vào background
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        print("🌙 Scene did enter background")
+        // Lưu dữ liệu, hủy timer
+    }
+    
+    // ✅ Scene bị hủy
+    func sceneDidDisconnect(_ scene: UIScene) {
+        print("❌ Scene did disconnect")
+    }
+}
+```
+
+### e.2. Các sự kiện chính
+
+| Sự kiện | Gọi khi nào |
+|---------|-------------|
+| `willConnectTo` | Scene được tạo và chuẩn bị kết nối |
+| `sceneWillEnterForeground` | Scene chuẩn bị vào foreground |
+| `sceneDidBecomeActive` | Scene đã active |
+| `sceneWillResignActive` | Scene chuẩn bị inactive |
+| `sceneDidEnterBackground` | Scene đã vào background |
+| `sceneDidDisconnect` | Scene bị hủy |
+
+---
+
+## F. So sánh AppDelegate vs SceneDelegate
+
+| Sự kiện | AppDelegate | SceneDelegate |
+|---------|-------------|---------------|
+| App khởi động | `didFinishLaunchingWithOptions` | `willConnectTo` |
+| Vào foreground | `willEnterForeground` | `sceneWillEnterForeground` |
+| Active | `didBecomeActive` | `sceneDidBecomeActive` |
+| Inactive | `willResignActive` | `sceneWillResignActive` |
+| Vào background | `didEnterBackground` | `sceneDidEnterBackground` |
+| Bị hủy | `willTerminate` | `sceneDidDisconnect` |
+
+### Lưu ý quan trọng
+
+> **Khi dùng SceneDelegate**, AppDelegate vẫn nhận được `didFinishLaunchingWithOptions`, nhưng các sự kiện foreground/background chuyển sang SceneDelegate.
+
+### Cấu hình Info.plist
+
+Để dùng SceneDelegate, cần thêm key `UIApplicationSceneManifest` vào `Info.plist`:
+
+```xml
+<key>UIApplicationSceneManifest</key>
+<dict>
+    <key>UIApplicationSupportsMultipleScenes</key>
+    <false/>
+    <key>UISceneConfigurations</key>
+    <dict>
+        <key>UIWindowSceneSessionRoleApplication</key>
+        <array>
+            <dict>
+                <key>UISceneConfigurationName</key>
+                <string>Default Configuration</string>
+                <key>UISceneDelegateClassName</key>
+                <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+            </dict>
+        </array>
+    </dict>
+</dict>
+```
+
+---
+
+## J. Thứ tự gọi các sự kiện
+
+### j.1. Lần đầu khởi động app
+
+```
+didFinishLaunchingWithOptions (AppDelegate)
+    ↓
+willConnectTo (SceneDelegate)
+    ↓
+sceneWillEnterForeground (SceneDelegate)
+    ↓
+applicationWillEnterForeground (AppDelegate)
+    ↓
+sceneDidBecomeActive (SceneDelegate)
+    ↓
+applicationDidBecomeActive (AppDelegate)
+```
+
+### j.2. User nhấn Home (app vào background)
+
+```
+applicationWillResignActive (AppDelegate)
+    ↓
+sceneWillResignActive (SceneDelegate)
+    ↓
+applicationDidEnterBackground (AppDelegate)
+    ↓
+sceneDidEnterBackground (SceneDelegate)
+```
+
+### j.3. User mở lại app từ background
+
+```
+sceneWillEnterForeground (SceneDelegate)
+    ↓
+applicationWillEnterForeground (AppDelegate)
+    ↓
+sceneDidBecomeActive (SceneDelegate)
+    ↓
+applicationDidBecomeActive (AppDelegate)
+```
+
+### j.4. App bị tắt hoàn toàn
+
+```
+applicationWillTerminate (AppDelegate)
+```
+
+---
+
+## H. Khi nào dùng sự kiện nào?
+
+| Tình huống | Sự kiện nên dùng |
+|------------|------------------|
+| Khởi tạo SDK, setup window | `didFinishLaunchingWithOptions` hoặc `willConnectTo` |
+| Lưu dữ liệu khi app vào background | `applicationDidEnterBackground` hoặc `sceneDidEnterBackground` |
+| Refresh dữ liệu khi app quay lại | `applicationWillEnterForeground` hoặc `sceneWillEnterForeground` |
+| Tạm dừng animation khi inactive | `applicationWillResignActive` |
+| Dọn dẹp trước khi tắt | `applicationWillTerminate` |
+| Request thêm thời gian chạy nền | `beginBackgroundTask(withName:expirationHandler:)` |
+
+---
+
+## I. Câu hỏi phỏng vấn thường gặp
+
+### Q1: App Life Cycle có mấy trạng thái?
+
+**5 trạng thái**: Not Running, Inactive, Active, Background, Suspended.
+
+### Q2: Sự khác biệt giữa `Inactive` và `Background`?
+
+- **Inactive**: App vẫn ở foreground nhưng không nhận event (ví dụ: có cuộc gọi đến).
+- **Background**: App đã bị đẩy xuống nền, không hiển thị trên màn hình.
+
+### Q3: Từ iOS 13, tại sao Apple tách SceneDelegate?
+
+Để hỗ trợ **multi-window** trên iPad. Mỗi window là một scene riêng, có thể chạy song song. `AppDelegate` quản lý app-level events, `SceneDelegate` quản lý UI-level events cho từng scene.
+
+### Q4: Làm sao để request thêm thời gian chạy nền?
+
+```swift
+var backgroundTask: UIBackgroundTaskIdentifier = .invalid
+
+func applicationDidEnterBackground(_ application: UIApplication) {
+    backgroundTask = application.beginBackgroundTask(withName: "MyTask") {
+        // Hết thời gian
+        application.endBackgroundTask(self.backgroundTask)
+        self.backgroundTask = .invalid
+    }
+    // Thực hiện công việc
+    // ...
+    application.endBackgroundTask(backgroundTask)
+    backgroundTask = .invalid
+}
+```
+
+### Q5: App có thể chạy code khi bị Suspended không?
+
+**Không**. Khi bị Suspended, app hoàn toàn bị đóng băng, không có code nào chạy. Muốn chạy nền lâu hơn, cần dùng các background mode (Background Fetch, Background Processing, Silent Push...).
+
+### Q6: `applicationWillTerminate` có luôn được gọi không?
+
+**Không**. Nếu app bị hệ thống tắt do thiếu RAM (khi đang Suspended), `applicationWillTerminate` **không được gọi**. Vì vậy, đừng đặt logic quan trọng ở đây.
+
+> 📝 **Ghi chú**: Tài liệu này được tổng hợp cho mục đích học tập và ôn phỏng vấn iOS.
+> Nếu bạn phát hiện lỗi hoặc muốn đóng góp, hãy tạo Pull Request!
 ---
 
 ## 📌 Tổng kết
