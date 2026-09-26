@@ -22,25 +22,30 @@ Swift-Handbook/
 ├── README.md
 └── Swift-Handbook/
     └── Swift-Handbook/
+        ├── Architectures/
+        │   ├── CleanArchitecture/
+        │   ├── Coordinator/
+        │   ├── DesignPatterns/
+        │   ├── MVC/
+        │   ├── MVP/
+        │   ├── MVI/
+        │   ├── MVVM/
+        │   └── VIPER/
         ├── CoreSwift/
+        │   ├── Concurrency/
+        │   ├── Generics/
+        │   ├── MemoryManagement/
         │   ├── CoreSwift.md
         │   └── Swift Basic/
-        │       ├── AssociatedType.playground/
-        │       ├── Closure & Capture List.playground/
-        │       ├── Extension.playground/
-        │       ├── Memory.playground/
-        │       ├── Protocol Composition.playground/
-        │       ├── ProtocolOrientedProgramming.playground/
-        │       └── StructVsClass.playground/
-        ├── iOSWorld/
-        │   ├── fundamentals/
-        │   ├── data-storage/
-        │   ├── design-patterns-architecture/
-        │   ├── multiple-threads/
-        │   ├── rxswift/
-        │   ├── ui-+-autolayout/
-        │   ├── blogs-+-practices/
-        │   └── practices/
+        ├── DataStorage/
+        ├── FinanceDomain/
+        ├── Interview/
+        ├── Network/
+        ├── Practices/
+        ├── RxSwift/
+        ├── Tests/
+        ├── UIKit/
+        ├── UIComponents/
         └── Resource/
             ├── AppDelegate.swift
             ├── SceneDelegate.swift
@@ -68,28 +73,71 @@ Các chủ đề đang có:
 | Closure & Capture List | Closure, escaping, non-escaping, `weak`, `unowned` | [Closure & Capture List.playground](Swift-Handbook/Swift-Handbook/CoreSwift/Swift%20Basic/Closure%20%26%20Capture%20List.playground/Contents.swift) |
 | App Life Cycle | App states, AppDelegate, SceneDelegate, background/suspended | [CoreSwift.md](Swift-Handbook/Swift-Handbook/CoreSwift/CoreSwift.md) |
 
-### 2. iOSWorld
+Tài liệu bổ sung đã được chia từ `ios-world-main`:
 
-Bộ tài liệu Markdown được copy từ `ios-world-main`: [iOSWorld/README.md](Swift-Handbook/Swift-Handbook/iOSWorld/README.md)
+| Chủ đề | Link |
+|--------|------|
+| Access Levels | [Access-Levels.md](Swift-Handbook/Swift-Handbook/CoreSwift/Access-Levels.md) |
+| OOP | [OOP.md](Swift-Handbook/Swift-Handbook/CoreSwift/OOP.md) |
+| Struct vs Class | [Struct-vs-Class.md](Swift-Handbook/Swift-Handbook/CoreSwift/Struct-vs-Class.md) |
+| Escaping vs Non-escaping | [Closure-Escaping-vs-NonEscaping.md](Swift-Handbook/Swift-Handbook/CoreSwift/Closure-Escaping-vs-NonEscaping.md) |
+| Memory Leaks | [Memory-Leaks.md](Swift-Handbook/Swift-Handbook/CoreSwift/MemoryManagement/Memory-Leaks.md) |
+| GCD | [GCD.md](Swift-Handbook/Swift-Handbook/CoreSwift/Concurrency/GCD.md) |
+| Operation Queue | [Operation-Queue.md](Swift-Handbook/Swift-Handbook/CoreSwift/Concurrency/Operation-Queue.md) |
+| Serial vs Concurrent Queue | [Serial-vs-Concurrent-Queue.md](Swift-Handbook/Swift-Handbook/CoreSwift/Concurrency/Serial-vs-Concurrent-Queue.md) |
 
-Các nhóm nội dung chính:
+### 2. UIKit & UI
+
+| Chủ đề | Link |
+|--------|------|
+| App Life Cycle | [App-Life-Cycle.md](Swift-Handbook/Swift-Handbook/UIKit/App-Life-Cycle.md) |
+| UIViewController Life Cycle | [UIViewController-LifeCycle.md](Swift-Handbook/Swift-Handbook/UIKit/ViewController/UIViewController-LifeCycle.md) |
+| Auto Layout Priority | [AutoLayout-Priority.md](Swift-Handbook/Swift-Handbook/UIKit/AutoLayout/AutoLayout-Priority.md) |
+| Frame vs Bounds | [Frame-vs-Bounds.md](Swift-Handbook/Swift-Handbook/UIKit/Layout/Frame-vs-Bounds.md) |
+| Reuse UITableViewCell | [Reuse-UITableViewCell.md](Swift-Handbook/Swift-Handbook/UIKit/TableView/Reuse-UITableViewCell.md) |
+| Ways to Pass Data | [Ways-to-Pass-Data.md](Swift-Handbook/Swift-Handbook/UIKit/Ways-to-Pass-Data.md) |
+| Texture / AsyncDisplayKit | [Texture-AsyncDisplayKit.md](Swift-Handbook/Swift-Handbook/UIComponents/Texture-AsyncDisplayKit.md) |
+
+### 3. Architectures & Design Patterns
+
+| Chủ đề | Link |
+|--------|------|
+| Architecture Overview | [Architecture-Overview.md](Swift-Handbook/Swift-Handbook/Architectures/Architecture-Overview.md) |
+| Architecture vs Design Pattern | [Architecture-vs-Design-Pattern.md](Swift-Handbook/Swift-Handbook/Architectures/Architecture-vs-Design-Pattern.md) |
+| SOLID | [SOLID.md](Swift-Handbook/Swift-Handbook/Architectures/SOLID.md) |
+| MVC | [MVC.md](Swift-Handbook/Swift-Handbook/Architectures/MVC/MVC.md) |
+| MVP | [MVP.md](Swift-Handbook/Swift-Handbook/Architectures/MVP/MVP.md) |
+| MVP-R | [MVP-R.md](Swift-Handbook/Swift-Handbook/Architectures/MVP/MVP-R.md) |
+| MVVM | [MVVM.md](Swift-Handbook/Swift-Handbook/Architectures/MVVM/MVVM.md) |
+| VIPER | [VIPER.md](Swift-Handbook/Swift-Handbook/Architectures/VIPER/VIPER.md) |
+| Clean Swift VIP | [Clean-Swift-VIP.md](Swift-Handbook/Swift-Handbook/Architectures/CleanArchitecture/Clean-Swift-VIP.md) |
+| Singleton | [Singleton.md](Swift-Handbook/Swift-Handbook/Architectures/DesignPatterns/Singleton/Singleton.md) |
+| Builder | [Builder.md](Swift-Handbook/Swift-Handbook/Architectures/DesignPatterns/Builder/Builder.md) |
+| Memento | [Memento.md](Swift-Handbook/Swift-Handbook/Architectures/DesignPatterns/Memento/Memento.md) |
+| Observer | [Observer.md](Swift-Handbook/Swift-Handbook/Architectures/DesignPatterns/Observer/Observer.md) |
+| Strategy | [Strategy.md](Swift-Handbook/Swift-Handbook/Architectures/DesignPatterns/Strategy/Strategy.md) |
+
+### 4. Data, RxSwift, Practices
 
 | Nhóm | Link |
 |------|------|
-| Fundamentals | [fundamentals](Swift-Handbook/Swift-Handbook/iOSWorld/fundamentals/README.md) |
-| Data Storage | [data-storage](Swift-Handbook/Swift-Handbook/iOSWorld/data-storage/README.md) |
-| Design Patterns & Architecture | [design-patterns-architecture](Swift-Handbook/Swift-Handbook/iOSWorld/design-patterns-architecture/README.md) |
-| Multiple Threads | [multiple-threads](Swift-Handbook/Swift-Handbook/iOSWorld/multiple-threads/README.md) |
-| RxSwift | [rxswift](Swift-Handbook/Swift-Handbook/iOSWorld/rxswift/README.md) |
-| UI & Auto Layout | [ui-+-autolayout](Swift-Handbook/Swift-Handbook/iOSWorld/ui-+-autolayout/README.md) |
-| Blogs & Practices | [blogs-+-practices](Swift-Handbook/Swift-Handbook/iOSWorld/blogs-+-practices/README.md) |
-| Practices | [practices](Swift-Handbook/Swift-Handbook/iOSWorld/practices/portrait-effect-on-custom-camera.md) |
+| Data Storage | [Data-Storage.md](Swift-Handbook/Swift-Handbook/DataStorage/Data-Storage.md) |
+| Core Data | [Core-Data.md](Swift-Handbook/Swift-Handbook/DataStorage/CoreData/Core-Data.md) |
+| RxSwift | [RxSwift.md](Swift-Handbook/Swift-Handbook/RxSwift/RxSwift.md) |
+| RxSwift Cheat Sheet | [Cheat-Sheet.md](Swift-Handbook/Swift-Handbook/RxSwift/Cheat-Sheet.md) |
+| iOS Learning Roadmap | [iOS-Learning-Roadmap.md](Swift-Handbook/Swift-Handbook/Practices/iOS-Learning-Roadmap.md) |
+| Style Convention | [Style-Convention.md](Swift-Handbook/Swift-Handbook/Practices/Style-Convention.md) |
+| Portrait Effect Camera | [Portrait-Effect-on-Custom-Camera.md](Swift-Handbook/Swift-Handbook/Practices/Camera/Portrait-Effect-on-Custom-Camera.md) |
+
+### 5. Finance Domain
+
+Tổng hợp kiến thức nghiệp vụ để phát triển app Finance: [Finance-Domain.md](Swift-Handbook/Swift-Handbook/FinanceDomain/Finance-Domain.md)
 
 ---
 
-## Hướng mở rộng giống `ios-world-main`
+## Hướng mở rộng tiếp theo
 
-Nếu muốn tổng hợp thêm kiến thức từ `ios-world-main`, nên chia thành các nhóm Markdown như sau để repo dễ đọc và dễ bảo trì:
+Khi thêm tài liệu mới, nên đưa thẳng vào folder chuyên đề tương ứng thay vì tạo một thư mục nguồn riêng:
 
 ```text
 Swift-Handbook/Swift-Handbook/
@@ -105,11 +153,14 @@ Swift-Handbook/Swift-Handbook/
 │   ├── State-Binding.md
 │   ├── Navigation.md
 │   └── Animation.md
-├── Architecture/
-│   ├── Architecture.md
-│   ├── MVC-MVVM-MVI.md
-│   ├── Coordinator.md
-│   └── Clean-Architecture.md
+├── Architectures/
+│   ├── MVC/
+│   ├── MVP/
+│   ├── MVVM/
+│   ├── MVI/
+│   ├── VIPER/
+│   ├── CleanArchitecture/
+│   └── DesignPatterns/
 ├── Networking/
 │   ├── Networking.md
 │   ├── URLSession.md
@@ -125,6 +176,11 @@ Swift-Handbook/Swift-Handbook/
 │   ├── UserDefaults-Keychain.md
 │   ├── CoreData.md
 │   └── SwiftData.md
+├── FinanceDomain/
+│   ├── Finance-Domain.md
+│   ├── Transaction.md
+│   ├── Budgeting.md
+│   └── Portfolio.md
 └── Testing/
     ├── Testing.md
     ├── Unit-Test.md
