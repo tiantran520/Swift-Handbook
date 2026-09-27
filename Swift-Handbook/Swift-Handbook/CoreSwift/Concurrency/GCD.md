@@ -1,35 +1,69 @@
+# Multithreading trong IOS
+
+Mỗi một ứng dụng IOS khi được chạy đều có một Main Thread. Thread này được sử dụng để xử lý các task liên quan đến UI như cập nhật giao diện, xử lý các tương tác của người dùng như scroll, zoom, ... Nếu Thread này bị block thì app của bạn sẽ rơi vào 1 trạng thái mà dân gian vẫn gọi là bị "đơ". Đây chính là lúc chúng ta cần đến multithreading
+
+Nguyên nhân của việc main thread bị block thường là do chúng ta không cẩn thận chạy các task nặng và tốn thời gian trên đó. Để tránh điều này thì trong các app IOS còn có những thread khác gọi là background thread sử dụng để chạy các task tốn thời gian như request data từ API, read/write dữ liệu,...
+
+# Queue
+
+Trong Swift, khái niệm **Queue** được hiểu là các hàng đợi chứa những block code để đợi các thread thực thi. Theo cách các task được thread lấy ra để thực thi, ta có thể chia queue làm 2 loại:
+
+- Serial Queue: Các task được thực thi lần lượt, kết thúc task này mới bắt đầu task khác
+- Concurrent Queue: Các task có thể được lấy ra và thực thi mà không cần đợi task trước đó kết thúc
+
+Vào những thời điểm xa xưa, các lập trình viên đã phải rất vất vả đối với những vấn đề liên qua đến các thread. Xử lý đồng bộ và bất đồng bộ giữa các thread luôn là một bộ môn khó nhằn. Tuy nhiên, ngày nay với sự xuất hiện của GCD, các dev Swift gần như chỉ cần quan tâm đến các queue còn việc quản lý các thread đã có hệ thống lo.
+
 # GCD
 
-Là 1 API cấp thấp giúp chúng ta quản lý và thực hiện đa luồng. Nó cung cấp 1 số API: DispatchQueue, DispatchGroup, Semaphore, Barrier.
+GCD là viết tắt của Grand Central Dispatch. Đây là một low-level API chịu trách nhiệm quản lý các queue trong Swift. Chức năng chính của GCD là:
 
-Nhắc đến GCD ta có 1 số khái niệm:
+- Tạo queue
+- Đưa các block code vào queue
 
-* The main queue: truy cập bằng DispatchQueue.main ⇒ update UI
-* The global queue: truy cập bằng [DispatchQueue.global](http://dispatchqueue.global) ⇒ Nó chia ra làm 4 loại chính và 1 loại default theo QoS (Quality of Service), theo mức độ ưu tiên từ cao nhất xuống thấp nhất:
-  1. userInteractive (high priority): Used for animations, or updating UI
-  2. userInitiated (high priority): Used for tasks like loading data from API, preventing the user from making interactions.
-  3. default
-  4. utility (low priority): Used for tasks that do not need to be tracked by the user.
-  5. background (low priority): Used for tasks like saving data in the local database or any maintenance code which is not on high priority.
+GCD cho phép chúng ta tạo và sử dụng 2 loại queue chính là:
 
-⇒ 2 mức độ utility và background thường được sử dụng cho những task nặng (lưu dữ liệu xuống local) để tránh việc block UI
+- Main queue: Là 1 serial queue. Các task trong queue này sẽ được thực thi ở main thread. Các task liên quan tới giao diện thường sẽ được đưa vào đây để thực thi
+- Global queue: Là Concurrent queue. Các task trong queue này sẽ được thực thi ở background thread.Thường dùng để xử lý các tác vụ tốn thời gian, không tác động đến UI
+- Ngoài ra chúng ta còn có thể custom các thuộc tính của queue theo nhu cầu của mình để sử dụng cho những mục đích cụ thể
 
-* Custom Queues (hay còn gọi là private queues): chúng ta tạo ra nó, có thể là serial hoặc concurrent queues
+Mặc dù khi đã đưa các task vào queue thì chúng ta không thể can thiệp được đến việc thread thực thi các task nữa nhưng chúng ta vẫn có thể điều chỉnh được độ ưu tiên để hệ thống ưu tiên thực hiện các task quan trọng hơn trước với QoS - Quality of Service. Có 5 mức QoS với độ ưu tiên lần lượt từ cao đến thấp là:
 
-**Ưu điểm:** Dễ sử dụng (GCD đã lo việc tạo thread, quản lý task)
+- UserInteractive
+- UserInitated
+- Default
+- Utility
+- Background
 
-**Nhược điểm:**
+# Dispatch Group
 
-1. Không thể cancel hoặc tạm dừng 1 task khi task đó đang chạy
-2. Không thể kiểm tra xem còn bao nhiêu tác vụ đang đợi trong 1 queue
-3. Không thể cấu hình có tối đa bao nhiêu tác vụ chạy cùng lúc trong queue (can not define the maximum number of concurrent operations)
+Khi làm việc với các ứng dụng trong thực tế, bạn sẽ rất thường xuyên gặp phải trường hợp cần đợi kết quả từ nhiều task để thực hiện một chức năng nào đó, ví dụ như app của bạn cần request nhiều API một lúc để lấy dữ liệu hiện thị nên View, lúc này mỗi request sẽ là một task riêng biệt. Tất nhiên là bạn hoàn toàn có thể request lần lượt từng API một và cứ khi nào nhận được kết quả thì reload lại view. Ứng dụng của bạn vẫn sẽ hoạt động bình thường với cách triển khai như vậy, tuy nhiên đối với người dùng thì đó lại không hẳn là một trải nghiệm tuyệt vời cho lắm.
 
-⇒ Trong 1 số trường hợp nhất định, chúng ta cần tracking 1 task vụ trong queue nhưng GCD không làm được
+Và để giải quyết vấn đề này Swift đã cung cấp cho chúng ta một giải pháp tuyệt vời mang tên Dispatch Group. Về cơ bản, DispatchGroup sẽ giúp chúng ta nhóm các task cần xử lý bất đồng bộ lại thành 1 nhóm và nhận được thông báo khi các task đó hoàn thành. Cách sử dụng cũng rất đơn giản, các bạn có thể tham khảo thử đoạn code sau đây
 
-⇒ Sử dụng Operation Queue
+1. Đầ tiên mình tạo ra 1 DispatchGroup đặt tên là fetchGroup
 
+```none
+    let fetchGroup = DispatchGroup()
+```
 
+2. Tiếp theo các bạn có thể nhìn thấy một biến list - đây là một array chứa các URL, với mỗi url này mình sẽ tạo 1 task request data cho nó và add vào trong fetchGroup bằng đoạn code sau
 
-### Reference link
+```none
+    fetchGroup.enter()
+      AF.request(url)
+        .validate()
+        .responseDecodable(of: T.self) { (response) in
+          guard let value = response.value else { return }
+          items.append(value)
+      }
+      fetchGroup.leave()
+```
 
-* [https://www.swiftpal.io/articles/what-is-qos-quality-of-service-in-gcd-swift](https://www.swiftpal.io/articles/what-is-qos-quality-of-service-in-gcd-swift)
+3. Cuối cùng sau khi các task trên đã thực hiện xong, mình sẽ gửi 1 notify đến main thread để update lại dữ liệu trên view
+
+```none
+    fetchGroup.notify(queue: .main) {
+      self.listData = items
+      self.listTableView.reloadData()
+    }
+```

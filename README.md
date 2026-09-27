@@ -83,6 +83,7 @@ Tài liệu bổ sung đã được chia từ `ios-world-main`:
 | Escaping vs Non-escaping | [Closure-Escaping-vs-NonEscaping.md](Swift-Handbook/Swift-Handbook/CoreSwift/Closure-Escaping-vs-NonEscaping.md) |
 | Memory Leaks | [Memory-Leaks.md](Swift-Handbook/Swift-Handbook/CoreSwift/MemoryManagement/Memory-Leaks.md) |
 | GCD | [GCD.md](Swift-Handbook/Swift-Handbook/CoreSwift/Concurrency/GCD.md) |
+| Async/Await | [Async-Await.md](Swift-Handbook/Swift-Handbook/CoreSwift/Concurrency/Async-Await.md) |
 | Operation Queue | [Operation-Queue.md](Swift-Handbook/Swift-Handbook/CoreSwift/Concurrency/Operation-Queue.md) |
 | Serial vs Concurrent Queue | [Serial-vs-Concurrent-Queue.md](Swift-Handbook/Swift-Handbook/CoreSwift/Concurrency/Serial-vs-Concurrent-Queue.md) |
 
@@ -121,6 +122,7 @@ Tài liệu bổ sung đã được chia từ `ios-world-main`:
 
 | Nhóm | Link |
 |------|------|
+| Data Security | [Data-Security.md](Swift-Handbook/Swift-Handbook/Data%20Security/Data-Security.md) |
 | Data Storage | [Data-Storage.md](Swift-Handbook/Swift-Handbook/DataStorage/Data-Storage.md) |
 | Core Data | [Core-Data.md](Swift-Handbook/Swift-Handbook/DataStorage/CoreData/Core-Data.md) |
 | RxSwift | [RxSwift.md](Swift-Handbook/Swift-Handbook/RxSwift/RxSwift.md) |
@@ -129,9 +131,26 @@ Tài liệu bổ sung đã được chia từ `ios-world-main`:
 | Style Convention | [Style-Convention.md](Swift-Handbook/Swift-Handbook/Practices/Style-Convention.md) |
 | Portrait Effect Camera | [Portrait-Effect-on-Custom-Camera.md](Swift-Handbook/Swift-Handbook/Practices/Camera/Portrait-Effect-on-Custom-Camera.md) |
 
-### 5. Finance Domain
+### 5. SwiftUI
 
-Tổng hợp kiến thức nghiệp vụ để phát triển app Finance: [Finance-Domain.md](Swift-Handbook/Swift-Handbook/FinanceDomain/Finance-Domain.md)
+| Chủ đề | Link |
+|--------|------|
+| SwiftUI App Life Cycle | [LifeCycle_SwiftUI.md](Swift-Handbook/Swift-Handbook/SwiftUI/LifeCycle_SwiftUI.md) |
+| State Management | [State-Management.md](Swift-Handbook/Swift-Handbook/SwiftUI/State-Management.md) |
+| UIKit vs SwiftUI | [UIKit-vs-SwiftUI.md](Swift-Handbook/Swift-Handbook/SwiftUI/UIKit-vs-SwiftUI.md) |
+
+### 6. Finance Domain
+
+| Chủ đề | Link |
+|--------|------|
+| Finance Domain Overview | [Finance-Domain.md](Swift-Handbook/Swift-Handbook/FinanceDomain/Finance-Domain.md) |
+| Session & Device Management | [Session-Device-Management.md](Swift-Handbook/Swift-Handbook/FinanceDomain/Session-Device-Management.md) |
+| eKYC & NFC | [eKYC-NFC.md](Swift-Handbook/Swift-Handbook/FinanceDomain/eKYC-NFC.md) |
+| Smart OTP & Transaction Signing | [Smart-OTP-Transaction-Signing.md](Swift-Handbook/Swift-Handbook/FinanceDomain/Smart-OTP-Transaction-Signing.md) |
+| Transfer & Payment Processing | [Transfer-Payment-Processing.md](Swift-Handbook/Swift-Handbook/FinanceDomain/Transfer-Payment-Processing.md) |
+| Card Services & PCI-DSS | [Card-Services-PCI.md](Swift-Handbook/Swift-Handbook/FinanceDomain/Card-Services-PCI.md) |
+| UI & Customer Data Protection | [UI-Data-Protection.md](Swift-Handbook/Swift-Handbook/FinanceDomain/UI-Data-Protection.md) |
+| Money Calculation & Offline Storage | [Money-Calculation-Offline-Storage.md](Swift-Handbook/Swift-Handbook/FinanceDomain/Money-Calculation-Offline-Storage.md) |
 
 ---
 

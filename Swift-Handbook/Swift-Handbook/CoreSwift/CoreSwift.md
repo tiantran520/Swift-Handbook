@@ -1,4 +1,4 @@
-# Swift Vault — Tổng hợp kiến thức Swift
+# Tổng hợp kiến thức Swift
 
 > Kho tài liệu tổng hợp kiến thức Swift dành cho iOS Developer.
 > Bao gồm: Struct vs Class, POP, Closure, ARC, Retain Cycle, và nhiều hơn nữa.
